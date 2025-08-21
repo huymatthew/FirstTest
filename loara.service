@@ -1,0 +1,42 @@
+# SystemD service file for Loara Django project
+# Place this file in /etc/systemd/system/loara.service
+
+[Unit]
+Description=Loara Django Application
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/Loara
+Environment="PATH=/path/to/Loara/venv/bin"
+EnvironmentFile=/path/to/Loara/.env
+ExecStart=/path/to/Loara/venv/bin/gunicorn \
+    --bind 127.0.0.1:8000 \
+    --workers 3 \
+    --timeout 120 \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --access-logfile /var/log/loara/access.log \
+    --error-logfile /var/log/loara/error.log \
+    --log-level info \
+    Loara.wsgi:application
+
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/path/to/Loara/media /path/to/Loara/staticfiles /var/log/loara
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - DJANGO_SECRET_KEY=your-secret-key-here
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
+    restart: unless-stopped
+    
+  # Uncomment if you want to use PostgreSQL
+  # db:
+  #   image: postgres:15
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data/
+  #   environment:
+  #     POSTGRES_DB: loara_db
+  #     POSTGRES_USER: loara_user
+  #     POSTGRES_PASSWORD: loara_password
+  #   restart: unless-stopped
+
+  # Uncomment if you want to use Nginx as reverse proxy
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./staticfiles:/app/staticfiles
+  #   depends_on:
+  #     - web
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:
